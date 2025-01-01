@@ -1,0 +1,15 @@
+Prezentacija; 20 min
+README.md 
+
+============================
+
+- Opis aplikacije,
+- Koji problem se resava,
+- Instalacija,
+- Povezivanje sa bazom,
+- Anotacije koje koristis,
+- Funkcionalnosti; Kljucne komponente aplikacije,
+- Pokretanje aplikacije,
+  - Rezultati 
+  - Kod
+- 
