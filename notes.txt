@@ -3,12 +3,13 @@ README.md
 
 ============================
 
-- Opis aplikacije,
-- Koji problem se resava,
+- Opis aplikacije ☑,
+- Koji problem se resava ☑,
 - Instalacija,
-- Povezivanje sa bazom,
-- Anotacije koje koristis,
-- Funkcionalnosti; Kljucne komponente aplikacije,
+- pom.xml ☑,
+- Povezivanje sa bazom ☑,
+- Anotacije koje koristis ☑,
+- Funkcionalnosti; Kljucne komponente aplikacije ☑,
 - Pokretanje aplikacije,
   - Rezultati 
   - Kod
