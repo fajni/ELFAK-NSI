@@ -1,12 +1,14 @@
 package com.app.nsi;
 
-import com.app.nsi.dao.StudentDAO;
+import com.app.nsi.dao.AppDAO;
+import com.app.nsi.entity.Faculty;
 import com.app.nsi.entity.Student;
 import com.app.nsi.entity.StudentDetails;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.stereotype.Component;
 
+import java.util.List;
 import java.util.Scanner;
 
 @Component
@@ -14,44 +16,47 @@ public class CommandLineRunnerApplication {
 
     private static Scanner input = new Scanner(System.in);
 
-    private void addStudentWithDetails(StudentDAO studentDAO) {
+    private void addStudentWithDetails(AppDAO appDAO) {
 
-        Student student = new Student();
+        Faculty elfak = new Faculty("Elfak", "Aleksandra Medveda 4, Nis");
 
-        StudentDetails details = new StudentDetails();
+        Student veljko = new Student("Veljko", "Fajnisevic", elfak);
 
-        System.out.println("Unesite ime studenta: ");
-        student.setFirstName(input.next());
+        StudentDetails veljkoDetails = new StudentDetails("veljkofajnisevic@elfak.rs", "Karadjordjeva 12, Bor", veljko);
 
-        System.out.println("Unesite prezime studenta: ");
-        student.setLastName(input.next());
+        veljkoDetails.setStudent(veljko);
 
-        System.out.println("Unesite adresu studenta: ");
-        details.setAddress(input.next());
+        veljko.setStudentDetails(veljkoDetails);
+        veljko.setFaculty(elfak);
 
-        System.out.println("Unesite email studenta: ");
-        details.setEmail(input.next());
+        elfak.setStudents(List.of(veljko));
 
-        details.setStudent(student);
-        student.setStudentDetails(details);
-
-        studentDAO.addStudent(student);
+        appDAO.addStudent(veljko);
     }
 
-    private void findAllStudents(StudentDAO studentDAO) {
+    private void findAllStudents(AppDAO appDAO) {
 
-        for(Student s : studentDAO.findAllStudents()){
+        for (Student s : appDAO.findAllStudents()) {
             System.out.println("\n======\n");
             System.out.println(s);
             System.out.println(s.getStudentDetails());
+            System.out.println(s.getFaculty());
+        }
+    }
+
+    private void findAllFaculties(AppDAO appDAO) {
+
+        for (Faculty f : appDAO.findAllFaculties()) {
+            System.out.println(f);
         }
     }
 
     @Bean
-    public CommandLineRunner commandLineRunner(StudentDAO studentDAO) {
+    public CommandLineRunner commandLineRunner(AppDAO appDAO) {
         return runner -> {
-            //addStudentWithDetails(studentDAO);
-            findAllStudents(studentDAO);
+            //addStudentWithDetails(appDAO);
+            //findAllStudents(appDAO);
+            findAllFaculties(appDAO);
         };
     }
 }

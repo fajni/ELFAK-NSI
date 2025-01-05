@@ -1,7 +1,11 @@
 package com.app.nsi.entity;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import jakarta.persistence.*;
 
+@JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
 @Entity
 @Table(name = "students")
 public class Student {
@@ -17,21 +21,34 @@ public class Student {
     @Column(name = "lastName", nullable = false)
     private String lastName;
 
+    // @JsonBackReference
     @OneToOne(mappedBy = "student", cascade = CascadeType.ALL)
     private StudentDetails studentDetails;
+
+    //@JsonBackReference
+    @ManyToOne(cascade = {
+            CascadeType.DETACH,
+            CascadeType.MERGE,
+            CascadeType.PERSIST,
+            CascadeType.REFRESH
+    })
+    @JoinColumn(name = "faculty_id", nullable = false)
+    private Faculty faculty;
 
     public Student() {
     }
 
-    public Student(String firstName, String lastName) {
+    public Student(String firstName, String lastName, Faculty faculty) {
         this.firstName = firstName;
         this.lastName = lastName;
+        this.faculty = faculty;
     }
 
-    public Student(String firstName, String lastName, StudentDetails studentDetails) {
+    public Student(String firstName, String lastName, StudentDetails studentDetails, Faculty faculty) {
         this.firstName = firstName;
         this.lastName = lastName;
         this.studentDetails = studentDetails;
+        this.faculty = faculty;
     }
 
     public Integer getId() {
@@ -64,6 +81,14 @@ public class Student {
 
     public void setStudentDetails(StudentDetails studentDetails) {
         this.studentDetails = studentDetails;
+    }
+
+    public Faculty getFaculty() {
+        return faculty;
+    }
+
+    public void setFaculty(Faculty faculty) {
+        this.faculty = faculty;
     }
 
     @Override

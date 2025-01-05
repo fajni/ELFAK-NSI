@@ -22,9 +22,12 @@ postoji fleksibilnost korišćenja SQL upita kada je to neophodno.
     - [Entiteti i relacije](#entiteti-i-relacije)
       - [Jedan-Prema-Jedan relacija](#jedan-prema-jedan-relacija)
       - [Jedan-Prema-Više relacija](#jedan-prema-više-relacija)
+      - [Više-Prema-Više relacija](#više-prema-više-relacija)
 - [Prednosti i mane](#prednosti-i-mane)
 - [Instalacija i pokretanje](#instalacija-i-pokretanje)
+  - [Spring Initializr](#spring-initializr)
   - [Povezivanje sa bazom podataka](#povezivanje-sa-bazom-podataka)
+  - [Pokretanje](#pokretanje)
 
 # Uvod
 
@@ -152,6 +155,23 @@ Kao jedne od osnovnih konfiguracija su:
 
 ### Entiteti i relacije
 
+Pre razvoja aplikacije potrebno je razumeti proces kaskadiranja (_eng. Cascade_). Kaskadiranje definiše
+kako će se određene operacije na roditeljskom entitetu automatski primeniti na njegove povezane entitete.
+
+Primer: Ukoliko se sačuva student i njegovi detalji u bazu, a `CascadeType.PERSIST` je omogućeno, oba
+entiteta će automatski biti sačuvana.
+
+Tipovi kaskadiranja (_eng. Cascade Types_):
+
+| Cascade Type | Opis                                                                           |
+|--------------|--------------------------------------------------------------------------------|
+| Detach       | Kada se entitet odvoji (ne nalazi se u sesiji), odvojiće se i povezani entitet |
+| Merge        | Kada se entitet ažurira, ažuriraće se i povezani entitet                       |
+| Persist      | Kada se entitet sačuva, sačuvaće se i povezani entitet                         |
+| Remove       | Kada se entitet obriše, obrisaće se i povezani entitet                         |
+| Refresh      | Kada se entitet "osveži" iz baze, osvežiće se i povezani entitet               |
+| All          | Primenjuje se sve gore navedene operacije                                      |
+
 #### Jedan-Prema-Jedan relacija
 
 Glavni entiteti: 
@@ -165,7 +185,7 @@ Kao osnovna anotacija koja omogućava ovu relaciju je `@OneToOne` koja je prikaz
   <img src="./slike/jedan-prema-jedan.png"/>
 </p>
 
-- __Student klasa__
+- __Student klasa__:
 
 ```java
 @Entity
@@ -190,7 +210,7 @@ public class Student {
 }
 ```
 
-- __Detalji studenta__
+- __Detalji studenta__:
 
 ```java
 @Entity
@@ -208,7 +228,11 @@ public class StudentDetails {
     @Column(name = "address", nullable = true)
     private String address;
 
-    @OneToOne(cascade = {CascadeType.DETACH, CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH})
+    @OneToOne(cascade = {
+            CascadeType.DETACH, 
+            CascadeType.MERGE, 
+            CascadeType.PERSIST, CascadeType.REFRESH
+    })
     @JoinColumn(name = "student_id", nullable = false)
     private Student student;
 
@@ -218,24 +242,100 @@ public class StudentDetails {
 
 #### Jedan-Prema-Više relacija
 
+Glavni entiteti:
+- student,
+- faculty.
+
+Sledeća slika prikazuje relaciju jedan-prema-više (_eng. one-to-many_) između entiteta students i faculties.
+Kao osnovne anotacije koje omogućavaju ovu relaciju su `@OneToMany` i `@ManyToOne` koje su prikazane u kodu ispod.
+
+<p align="center">
+  <img src="./slike/jedan-prema-vise.png"/>
+</p>
+
+- __Student klasa__:
+
+```java
+@Entity
+@Table(name = "students")
+public class Student {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id")
+    private Integer id;
+
+    @Column(name = "firstName", nullable = false)
+    private String firstName;
+
+    @Column(name = "lastName", nullable = false)
+    private String lastName;
+
+    @ManyToOne(cascade = {
+            CascadeType.DETACH,
+            CascadeType.MERGE,
+            CascadeType.PERSIST,
+            CascadeType.REFRESH
+    })
+    @JoinColumn(name = "faculty_id", nullable = false)
+    private Faculty faculty;
+    
+    // ...
+
+}
+```
+
+- __Fakultet klasa__:
+
+```java
+@Entity
+@Table(name = "faculties")
+public class Faculty {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id")
+    private Integer id;
 
 
-# Prednosti i mane
+    @Column(name = "name", nullable = false)
+    private String name;
+
+    @Column(name = "address")
+    private String address;
+
+    @OneToMany(mappedBy = "faculty", cascade = CascadeType.ALL)
+    private List<Student> students;
+    
+    // ...
+}
+```
+
+#### Više-Prema-Više relacija
 
 
 
 # Instalacija i pokretanje
 
+## spring initializr
 
+Pre pokretanja aplikacije, potrebno je kreirati projekat i dodati potrebne zavisnosti (_eng. dependencies_). [Spring initializr](https://start.spring.io/) nam pomaže u tome.
 
-## spring initialirz
+Kao 2 osnovne zavisnosti su:
+- Spring Data JPA (pruža anotacije koje koristimo za razvoj baze podataka),
+- MySQL Driver (omogućuje konekciju sa MySQL bazom podataka).
 
-
+<img src="./slike/spring-initializr.png" />
 
 ## Povezivanje sa bazom podataka
+
+Nakon kreiranja projekta, potrebno je omogučiti ostvarivanje konekcije sa MySQL bazom u `application.properties`:
 
 ```properties
 spring.datasource.url=jdbc:mysql://localhost:3306/fakultet
 spring.datasource.username=springstudent
 spring.datasource.password=springstudent
 ```
+
+## Pokretanje
+

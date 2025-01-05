@@ -17,7 +17,12 @@ public class StudentDetails {
     @Column(name = "address", nullable = true)
     private String address;
 
-    @OneToOne(cascade = {CascadeType.DETACH, CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH})
+    @OneToOne(cascade = {
+            CascadeType.DETACH,
+            CascadeType.MERGE,
+            CascadeType.PERSIST,
+            CascadeType.REFRESH
+    })
     @JoinColumn(name = "student_id", nullable = false)
     private Student student;
 
