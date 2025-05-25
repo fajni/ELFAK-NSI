@@ -1,5 +1,6 @@
 package com.app.nsi.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 
 import java.util.List;
@@ -19,7 +20,8 @@ public class Faculty {
     @Column(name = "address")
     private String address;
 
-    @OneToMany(mappedBy = "faculty", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "faculty", cascade = {}, fetch = FetchType.LAZY)
+    @JsonIgnore
     private List<Student> students;
 
     public Faculty() {

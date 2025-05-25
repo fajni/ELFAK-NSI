@@ -3,12 +3,14 @@ package com.app.nsi.dao;
 import com.app.nsi.entity.Faculty;
 import com.app.nsi.entity.Student;
 import com.app.nsi.entity.StudentDetails;
+import com.app.nsi.entity.Subject;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.TypedQuery;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.LinkedList;
 import java.util.List;
 
 @Repository
@@ -21,15 +23,19 @@ public class AppDAO {
         this.entityManager = entityManager;
     }
 
+
+    // STUDENT:
     @Transactional
     public void addStudent(Student student) {
+
         entityManager.persist(student);
     }
 
     @Transactional
     public void addStudentWithDetails(Student student, StudentDetails studentDetails) {
 
-        studentDetails.setStudent(student);
+        student.setStudentDetails(studentDetails);
+
         entityManager.persist(student);
     }
 
@@ -53,10 +59,46 @@ public class AppDAO {
     }
 
 
+    // FACULTY:
     public List<Faculty> findAllFaculties() {
 
         TypedQuery<Faculty> query = entityManager.createQuery("SELECT f FROM Faculty f", Faculty.class);
 
         return query.getResultList();
+    }
+
+    @Transactional
+    public void addFaculty(Faculty faculty) {
+
+        entityManager.persist(faculty);
+    }
+
+    @Transactional
+    public void addFacultyWithStudents(Faculty faculty, List<Student> students) {
+
+        faculty.setStudents(students);
+        entityManager.persist(faculty);
+    }
+
+
+    // SUBJECT:
+    public List<Subject> findAllSubjects() {
+
+        TypedQuery<Subject> query = entityManager.createQuery("SELECT s FROM Subject s", Subject.class);
+
+        return query.getResultList();
+    }
+
+    @Transactional
+    public void addSubject(Subject subject) {
+
+        entityManager.persist(subject);
+    }
+
+    @Transactional
+    public void addSubjectWithStudents(Subject subject, List<Student> students) {
+
+        subject.setStudents(students);
+        entityManager.persist(subject);
     }
 }

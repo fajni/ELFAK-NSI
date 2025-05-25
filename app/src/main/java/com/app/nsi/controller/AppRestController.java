@@ -4,6 +4,7 @@ import com.app.nsi.dao.AppDAO;
 import com.app.nsi.entity.Faculty;
 import com.app.nsi.entity.Student;
 import com.app.nsi.entity.StudentDetails;
+import com.app.nsi.entity.Subject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -11,6 +12,9 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.LinkedList;
 import java.util.List;
 
 @RestController
@@ -24,20 +28,19 @@ public class AppRestController {
     }
 
     @GetMapping("/")
-    public String hello() {
-        return "Hello World";
+    public HashMap<String, String> hello() {
+        return new HashMap<>(){{
+            put("/students", "Show all students");
+            put("/students/{id}", "Show student");
+            put("/faculties", "Show all faculties");
+            put("/subjects", "Show all subjects");
+        }};
     }
 
     @GetMapping("/students")
     public List<Student> findAllStudents() {
 
-        List<Student> students = appDAO.findAllStudents();
-        List<StudentDetails> details = appDAO.findStudentDetails();
-
-        for(Student student : students)
-            System.out.println(student);
-
-        return students;
+        return appDAO.findAllStudents();
     }
 
     @GetMapping("/students/{id}")
@@ -50,6 +53,12 @@ public class AppRestController {
     public List<Faculty> findAllFaculties() {
 
         return appDAO.findAllFaculties();
+    }
+
+    @GetMapping("/subjects")
+    public List<Subject> findAllSubjects() {
+
+        return appDAO.findAllSubjects();
     }
 
 }

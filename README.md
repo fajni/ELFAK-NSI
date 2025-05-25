@@ -5,14 +5,14 @@ ELFAK-MAS - Napredno Softversko Inzenjerstvo
 Spring Boot JPA omogućava razvoj relacione baze podataka bez potrebe za ručnim pisanjem SQL koda.
 Ovo se postiže zahvaljujući ORM-u (_Object-Relational Mapping_) i drugih alata koje Spring Data JPA pruža.
 
-Spring Boot JPA značajno olakšava rad sa bazama podataka u većini slučajeva, međutim ukoliko je potrebno
+Spring Boot JPA značajno olakšava rad sa bazama podataka u većini slučajeva, međutim ukoliko je potrebno;
 postoji fleksibilnost korišćenja SQL upita kada je to neophodno.
 
 # Sadrzaj:
 
 - [Uvod](#uvod)
   - [Mapiranje klase u tabelu](#mapiranje-klase-u-tabelu)
-  - [JPQL (Java Persistence Query Language)](#jpql-java-persistence-query-language)
+  - [JPQL (Jakarta Persistence Query Language)](#jpql-jakarta-persistence-query-language)
 - [Opis aplikacije](#opis-aplikacije)
   - [Koji se problem rešava](#koji-se-problem-rešava)
   - [Funkcionalnosti aplikacije](#funkcionalnosti-aplikacije)
@@ -26,6 +26,7 @@ postoji fleksibilnost korišćenja SQL upita kada je to neophodno.
 - [Prednosti i mane](#prednosti-i-mane)
 - [Instalacija i pokretanje](#instalacija-i-pokretanje)
   - [Spring Initializr](#spring-initializr)
+    - [Konfiguracija Maven zavisnosti](#konfiguracija-maven-zavisnosti)
   - [Povezivanje sa bazom podataka](#povezivanje-sa-bazom-podataka)
   - [Pokretanje](#pokretanje)
 
@@ -33,7 +34,7 @@ postoji fleksibilnost korišćenja SQL upita kada je to neophodno.
 
 ## Mapiranje klase u tabelu
 
-Mapiranje Java klase u tabelu baze podataka putem __JPA__ (_Java Persistence API_) omogućava povezivanje
+Mapiranje Java klase u tabelu baze podataka putem __JPA__ (_Jakarta Persistence API_) omogućava povezivanje
 objekata u aplikaciji sa tabelama u relacionoj bazi podataka. Ova funkcionalnost se postiže pomoću JPA
 anotacija koje definišu kako se entitet (klasa) mapira u tabelu, a njeni atributi na kolone te tabele.
 
@@ -44,7 +45,7 @@ anotacija koje definišu kako se entitet (klasa) mapira u tabelu, a njeni atribu
 Mapiranjem klase u tabelu putem JPA ostvaruje se čistiji i čitljiviji kod, automatsko generisanje SQL upita,
 lako upravljanje relacijama između entiteta, podrška za različite baze podataka bez promene izvornog koda, ...
 
-## JPQL (Java Persistence Query Language)
+## JPQL (Jakarta Persistence Query Language)
 
 JPQL predstavlja JPA verziju SQL-a koja radi sa entitetima, a ne direktno sa tabelama.
 
@@ -58,7 +59,7 @@ efikasan rad sa relacionim bazama podataka.
 
 # Opis aplikacije
 
-Ovaj projekat predstavlja osnovu za razumevanje kako moderne tehnologije poput Spring Boot JPA pojednostavljuje
+Ovaj projekat predstavlja osnovu za razumevanje kako moderne tehnologije poput Spring Boot JPA pojednostavljuju
 rad sa relacionim bazama podataka i omogućava brz razvoj skalabilnih aplikacija.
 
 Mogućnost automatskog mapiranja Java klasa u tabele baze podataka, bez potrebe za ručnim pisanjem SQL upita, 
@@ -74,7 +75,7 @@ instruktore/profesore, kao i njihove medjusobne relacije kojima se upravlja pomo
 
 ## Koji se problem rešava
 
-Jedan od glavnih problema koji se reševa je smanjenje kompleknosti rada sa relacionim bazama podataka jer se
+Jedan od glavnih problema koji se reševa je smanjenje kompleksnosti rada sa relacionim bazama podataka jer se
 izbegava pisanje ručnih SQL upita i kodova. Ovo se rešava pomoću ORM (_Object-Relational Mapping_) koji
 automatski mapira Java klase u tabele baze podataka.
 
@@ -82,7 +83,7 @@ Ručno pisanje koda za osnovne operacije (Create, Read, Update, Delete) je repet
 Spring Boot JPA nudi gotove metode kroz repozitorijume koji su dosta fleksibilni i efikasni.
 
 Pisanje složenih SQL upita je često teško i zahteva duboko razumevanje SQL. Spring Boot JPA nam omogućava
-pisanje upita koristeći __JPQL__ (_eng. Java Persistence Query Language_) koji se zasnivaju na Javi i baziraju 
+pisanje upita koristeći __JPQL__ (_eng. Jakarta Persistence Query Language_) koji se zasnivaju na Javi i baziraju 
 na entitetima.
 
 Kao glavni problem je komplikovano upravljanje relacijama između tabela, rad sa relacionim bazama podataka
@@ -210,7 +211,7 @@ public class Student {
 }
 ```
 
-- __Detalji studenta__:
+- __Detalji studenta (_eng. Student Details_) klasa__:
 
 ```java
 @Entity
@@ -285,7 +286,7 @@ public class Student {
 }
 ```
 
-- __Fakultet klasa__:
+- __Fakultet (_eng. Faculty_) klasa__:
 
 ```java
 @Entity
@@ -313,7 +314,72 @@ public class Faculty {
 
 #### Više-Prema-Više relacija
 
+Glavni entiteti:
+- student,
+- subject.
 
+Sledeća slika prikazuje relaciju više-prema-više (_eng. many-to-many_) između entiteta students i subjects.
+Kao osnovna anotacija koja omogućava ovu relaciju je `@ManyToMany` koja je prikazana u kodu ispod.
+
+<p align="center">
+  <img src="./slike/vise-prema-vise.png"/>
+</p>
+
+- __Student klasa__:
+```java
+@Entity
+@Table(name = "students")
+public class Student {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id")
+    private Integer id;
+
+    @Column(name = "firstName", nullable = false)
+    private String firstName;
+
+    @Column(name = "lastName", nullable = false)
+    private String lastName;
+
+    @ManyToMany(cascade = {
+            CascadeType.DETACH,
+            CascadeType.MERGE,
+            CascadeType.PERSIST,
+            CascadeType.REFRESH
+    })
+    @JoinTable(
+            name = "student_subjects",
+            joinColumns = @JoinColumn(name = "student_id"),
+            inverseJoinColumns = @JoinColumn(name = "subject_id")
+    )
+    private List<Subject> subjects;
+    
+    // ...
+
+}
+```
+
+- __Predmet (_eng. Subject_) klasa__:
+```java
+@Entity
+@Table(name = "subjects")
+public class Subject {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id")
+    private Integer id;
+
+    @Column(name = "title", nullable = false)
+    private String title;
+
+    @ManyToMany(mappedBy = "subjects")
+    private List<Student> students;
+
+    // ...
+}
+```
 
 # Instalacija i pokretanje
 
@@ -327,6 +393,32 @@ Kao 2 osnovne zavisnosti su:
 
 <img src="./slike/spring-initializr.png" />
 
+### Konfiguracija Maven zavisnosti
+
+Nakon kreiranja projekta, zavisnosti u _pom.xml_ fajl su:
+
+```html
+<dependencies>
+
+    <dependency>
+      <groupId>org.springframework.boot</groupId>
+      <artifactId>spring-boot-starter-web</artifactId>
+    </dependency>
+    
+    <dependency>
+      <groupId>org.springframework.boot</groupId>
+      <artifactId>spring-boot-starter-data-jpa</artifactId>
+    </dependency>
+    
+    <dependency>
+      <groupId>com.mysql</groupId>
+      <artifactId>mysql-connector-j</artifactId>
+      <scope>runtime</scope>
+    </dependency>
+  
+</dependencies>
+```
+
 ## Povezivanje sa bazom podataka
 
 Nakon kreiranja projekta, potrebno je omogučiti ostvarivanje konekcije sa MySQL bazom u `application.properties`:
@@ -339,3 +431,8 @@ spring.datasource.password=springstudent
 
 ## Pokretanje
 
+Pokretanje je moguće izvršiti preko .jar fajla koji se nalazi u _jar_ folderu.
+
+```shell
+java -jar nsi.jar
+```
