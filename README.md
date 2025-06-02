@@ -23,6 +23,7 @@ postoji fleksibilnost korišćenja SQL upita kada je to neophodno.
       - [Jedan-Prema-Jedan relacija](#jedan-prema-jedan-relacija)
       - [Jedan-Prema-Više relacija](#jedan-prema-više-relacija)
       - [Više-Prema-Više relacija](#više-prema-više-relacija)
+  - [Projekat](#projekat)
 - [Prednosti i mane](#prednosti-i-mane)
 - [Instalacija i pokretanje](#instalacija-i-pokretanje)
   - [Spring Initializr](#spring-initializr)
@@ -381,6 +382,38 @@ public class Subject {
 }
 ```
 
+## Projekat
+
+Kada se sve prethodno sumira, dobijamo jednostavnu relacionu bazu:
+
+<p align="center">
+  <img src="./slike/er.png"/>
+</p>
+
+# Prednosti i mane
+
+- PREDNOSTI:
+  - __Smanjenje šablonskog koda__: Smanjuje se potreba za konfiguracijom
+    standardnog koda kroz anotacija i razumne podrazumevane vrednosti,
+  - __Automatska konfiguracija__: Automatski se konfiguriše JPA podešavanja
+    na osnovu konfiguracija definisanih u projektu,
+  - __Upravljanje transakcijama__: Ugrađena podrška za transakcije olakšava
+    upravljanje konzistentnošću podataka,
+  - __Upravljanje entitetima__: Sloj apstrakcije koji pojednostavljuje CRUD
+    operacije, paginaciju i sortiranje.
+
+
+- MANE:
+  - __Skrivena kompleksnost__: Mnogo toga se dešava "ispod haube" što može
+    biti zbunjujuće jer aplikacija radi bez jasnog razumevanja šta se tačno 
+    dešava. Mač sa 2 oštrice,
+  - __Pokretanje__: Kod većih modela sa mnogo entiteta, JPA proverava i mapira
+    sve anotacije prilikom pokretanja, što može usporiti pokretanje aplikacije.
+    Zahteva se dosta procesorske (_CPU_) snage i dosta memorije (_Memory_),
+  - __Autokonfiguracija__: Autokonfiguracija može biti korisna, ali ujedno i
+    izvor problema jer sakriva mnogo internih detalja i može dovesti do 
+    nepredviđenog ponašanja ako nije dobro shvaćena.
+
 # Instalacija i pokretanje
 
 ## spring initializr
@@ -432,6 +465,7 @@ spring.datasource.password=springstudent
 ## Pokretanje
 
 Pokretanje je moguće izvršiti preko .jar fajla koji se nalazi u _jar_ folderu.
+Pre pokretanja, pozicionirati se u _jar_ folder gde se nalazi _.jar_ fajl.
 
 ```shell
 java -jar nsi.jar
